@@ -10,7 +10,6 @@ export const musicApiSlice = apiSlice.injectEndpoints({
                 },
             }),
             providesTags: (result) => {
-                // console.log("checkResult", result)
                 return (result
                     ? [
                         { type: "Music", id: "LIST" },
@@ -19,9 +18,19 @@ export const musicApiSlice = apiSlice.injectEndpoints({
                     : [{ type: "Music", id: "LIST" }])
             }
         }),
+        getMusicById: builder.query({
+            query: (id) => ({
+                url: `/music/get-music/${id}`,
+                validateStatus: (response, result) => {
+                    return response.status === 200 && !result.isError;
+                },
+            }),
+            providesTags: (result, error, id) => {
+                return [{ type: "User", id }];
+            },
+        }),
         addMusic: builder.mutation({
             query: data => {
-                console.log("checkAddMusic", data)
                 return ({
                     url: '/music/upload',
                     method: 'POST',
@@ -32,7 +41,26 @@ export const musicApiSlice = apiSlice.injectEndpoints({
                 { type: 'Music', id: "LIST" }
             ]
         }),
+        editMusic: builder.mutation({
+            query: ({ tableRowId, formData }) => {
+                return ({
+                    url: `/music/edit-music/${tableRowId}`,
+                    method: 'PUT',
+                    body: formData
+                })
+            },
+            invalidatesTags: [
+                { type: 'Music', id: "LIST" }
+            ]
+        }),
+        deleteMusic: builder.mutation({
+            query: (id) => ({
+                url: `/music/delete-music/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: [{ type: "Music", id: "LIST" }]
+        }),
     }),
 });
 
-export const { useGetMusicQuery, useAddMusicMutation } = musicApiSlice;
+export const { useGetMusicQuery, useAddMusicMutation, useDeleteMusicMutation, useGetMusicByIdQuery, useEditMusicMutation } = musicApiSlice;

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,8 +12,9 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Pagination from "@mui/material/Pagination";
-import { useGetMusicQuery } from "../../redux/features/music/musicApiSlice";
+import { useDeleteMusicMutation, useGetMusicQuery } from "../../redux/features/music/musicApiSlice";
 import UploadMusic from "./UploadMusic";
+import EditMusic from "./EditMusic";
 
 const columns = [
     {
@@ -64,13 +64,13 @@ const columns = [
 
 const Dashboard = () => {
 
-    const dispatch = useDispatch();
-
     const getPageNumberFromSessionStorage = sessionStorage.getItem("currentPage")
     const [currentPage, setCurrentPage] = useState(getPageNumberFromSessionStorage || 1);
     const [text, setText] = useState("");
     const [search, setSearch] = useState("");
     const [genre, setGenre] = useState('all');
+    const [tableRowId, setTableRowId] = useState("");
+    const [editMusicOpen, setEditMusicOpen] = useState(false);
 
     const [uploadMusicOpen, setUploadMusicOpen] = useState(false);
 
@@ -97,6 +97,17 @@ const Dashboard = () => {
             refetchOnMountOrArgChange: true,
         });
 
+    const [deleteMusic, { isError: isDeleteError, error: deleteError, isSuccess: deleteIsSuccess, reset: deleteReset }] = useDeleteMusicMutation();
+
+    const handleDeleteClick = (e, id) => {
+        deleteMusic(id)
+    }
+
+    const handleEditClick = (e, id) => {
+        setTableRowId(id);
+        setEditMusicOpen(true);
+    };
+
     useEffect(() => {
         if (text == "") {
             setSearch("")
@@ -109,6 +120,16 @@ const Dashboard = () => {
             sessionStorage.setItem("currentPage", 1);
         }
     }, [])
+
+    useEffect(() => {
+        if (deleteIsSuccess) {
+            alert("Music Deleted Successfully")
+            deleteReset()
+        } else if (isDeleteError) {
+            alert(deleteError?.data?.message)
+            deleteReset()
+        }
+    }, [deleteIsSuccess, isDeleteError])
 
     return (
         <div>
@@ -274,9 +295,9 @@ const Dashboard = () => {
                                                                 variant="contained"
                                                                 color="secondary"
                                                                 size="small"
-                                                            // onClick={(event) =>
-                                                            //     handleEditClick(event, row._id)
-                                                            // }
+                                                                onClick={(event) =>
+                                                                    handleEditClick(event, row._id)
+                                                                }
                                                             >
                                                                 Edit
                                                             </Button>
@@ -284,9 +305,9 @@ const Dashboard = () => {
                                                                 variant="contained"
                                                                 color="error"
                                                                 size="small"
-                                                            // onClick={(event) =>
-                                                            //     handleDeleteClick(event, row._id)
-                                                            // }
+                                                                onClick={(event) =>
+                                                                    handleDeleteClick(event, row._id)
+                                                                }
                                                             >
                                                                 Delete
                                                             </Button>
@@ -324,6 +345,12 @@ const Dashboard = () => {
                 uploadMusicOpen={uploadMusicOpen}
                 setUploadMusicOpen={setUploadMusicOpen}
                 setCurrentPage={setCurrentPage}
+            />
+
+            <EditMusic
+                editMusicOpen={editMusicOpen}
+                setEditMusicOpen={setEditMusicOpen}
+                tableRowId={tableRowId}
             />
         </div>
     )
