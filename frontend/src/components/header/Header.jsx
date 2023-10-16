@@ -3,9 +3,10 @@ import Button from "@mui/material/Button";
 import { useHistory } from "react-router-dom";
 import { useSendLogoutMutation } from "../../redux/features/auth/authApiSlice";
 import { useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
 
 const Header = () => {
-
+    const { username } = useAuth();
     const history = useHistory();
     const [sendLogout, {
         isLoading,
@@ -31,16 +32,21 @@ const Header = () => {
                 <div className={styles.heading}>
                     Dashboard
                 </div>
-                <div>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                        onClick={sendLogout}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Logging Out..." : "Logout"}
-                    </Button>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div>
+                        <h3 style={{ color: "#ff014f" }} >{username}</h3>
+                    </div>
+                    <div>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            onClick={sendLogout}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Logging Out..." : "Logout"}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
