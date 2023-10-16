@@ -79,13 +79,14 @@ const refresh = async (req, res) => {
         if (!foundUser) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
-
+        const userId = foundUser._id.toString();
         const accessToken = jwt.sign(
             {
                 "UserInfo": {
                     "email": foundUser.email, // Include email in the access token
                     "username": foundUser.username,
-                    "roles": foundUser.roles
+                    "roles": foundUser.roles,
+                    "userId": userId,
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,

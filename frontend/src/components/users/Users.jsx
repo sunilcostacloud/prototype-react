@@ -22,7 +22,7 @@ const Users = () => {
     const { data, isFetching, isSuccess, isError, error } = useGetUsersQuery(
         "usersList",
         {
-            pollingInterval: 20000,
+            pollingInterval: 900000,
             refetchOnFocus: true,
             refetchOnMountOrArgChange: true,
         }

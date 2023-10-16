@@ -1,6 +1,10 @@
+import Dashboard from "../components/music/Dashboard"
+
 const Creator = () => {
     return (
-        <div>Creator</div>
+        <div>
+            <Dashboard />
+        </div>
     )
 }
 

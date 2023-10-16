@@ -52,7 +52,6 @@ const SideMenu = () => {
             key={index}
             onClick={() => setActiveIndex(index)}
           >
-            {console.log()}
             {(menuItem.name === "Home" || (roles.some((role) => role.toLowerCase() === menuItem.name.toLowerCase()))) && (
               <Link
                 style={{ textDecoration: "none", color: "#fff" }}
