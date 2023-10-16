@@ -9,15 +9,30 @@ export const musicApiSlice = apiSlice.injectEndpoints({
                     return response.status === 200 && !result.isError;
                 },
             }),
+            providesTags: (result) => {
+                // console.log("checkResult", result)
+                return (result
+                    ? [
+                        { type: "Music", id: "LIST" },
+                        ...result.music.map(({ _id }) => ({ type: "Music", id: _id })),
+                    ]
+                    : [{ type: "Music", id: "LIST" }])
+            }
         }),
-        providesTags: (result) =>
-            result
-                ? [
-                    { type: "Music", id: "LIST" },
-                    ...result.map(({ _id }) => ({ type: "Music", id: _id })),
-                ]
-                : [{ type: "Music", id: "LIST" }],
+        addMusic: builder.mutation({
+            query: data => {
+                console.log("checkAddMusic", data)
+                return ({
+                    url: '/music/upload',
+                    method: 'POST',
+                    body: data
+                })
+            },
+            invalidatesTags: [
+                { type: 'Music', id: "LIST" }
+            ]
+        }),
     }),
 });
 
-export const { useGetMusicQuery } = musicApiSlice;
+export const { useGetMusicQuery, useAddMusicMutation } = musicApiSlice;
